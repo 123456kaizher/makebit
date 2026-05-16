@@ -28,7 +28,7 @@ pins.i2cWriteNumber(DISPLAY_I2C_ADDRESS + (bit % 4), d, NumberFormat.In8BE)
 }
 
 /**
-* turn in display
+* turn on display
 */
 //% blockId="TM1650_ON" block="On TM1650"
 //% weight=50 blockGap=8
@@ -59,7 +59,7 @@ dbuf = [0, 0, 0, 0]
 }
 
 /**
-* show a digital in given position
+* show a digit in given position
 * @param digit is number (0-15) will be shown, eg: 1
 */
 //% blockId="TM1650_DIGIT" block="Show %num|At %bit"
@@ -71,7 +71,7 @@ dat(bit, _SEG[num % 16])
 }
 
 **/
-* show number in display
+* show number on display
 * @param num is number will be shown, eg: 100
 */
 //% blockId=TM1650_SHOW_NUMBER" block="Show Number %num"
@@ -104,4 +104,36 @@ digit((num >> 12) % 16, 0)
 digit(num % 10, 3)
 digit((num >> 4) % 16, 2)
 digit((num >> 8) % 16, 1)
+}
+
+/**
+* show dot point at given position
+* @param bit is given position, eg: 0
+* @param show is true/false, eg: true
+*/
+//% blockId="TM1650_SHOW_DP" block="Show Decimal At %bit| %num
+//% weight=80 blockGap=8
+export funtion showDpAT(bit: number, show: boolean) {
+if (show) dat(bit, dbuf[bit % 4] | 0x80)
+else dat(bit, dbuf[bit % 4] & 0x7F)
+}
+
+//*
+* set display intensity
+* @param dat is intensity of the display, eg: 3
+*/
+//% blockId="TM1650_INTENSITY" block="Set Intensity To %dat"
+//% weight=70 blockGap=8
+export funtion setIntensity(dat: number) {
+if ((dat < 0) || (dat > 8))
+return;
+if (dat == 0)
+off()
+else {
+_intensity = dat
+cmd((dat << 4) | 0x01)
+}
+}
+
+on()
 }
